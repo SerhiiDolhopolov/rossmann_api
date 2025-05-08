@@ -7,4 +7,4 @@ services:
     volumes:
       - .:/app
     ports:
-      - 2002:8000
+      - 2003:8000
