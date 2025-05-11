@@ -1,15 +1,18 @@
-from typing import Optional
 from pydantic import BaseModel, Field
 
-from app.schemas import IsDeletedModel
 
 class CategoryAddSchema(BaseModel):
     name: str = Field(max_length=255)
-    description: str | None = Field(default=None, max_length=2048)
+    description: str | None = Field(max_length=2048, default=None)
     
-class CategoryPatchSchema(IsDeletedModel):
-    name: Optional[str] = Field(default=None, max_length=255)
-    description: Optional[str] = Field(default=None, max_length=2048)
+class CategoryPatchSchema(BaseModel):
+    name: str | None = Field(max_length=255, default=None)
+    description: str | None = Field(max_length=2048, default=None)
+    is_deleted: bool | None = Field(description="Indicates if the record is deleted", 
+                                    default=None)
     
-class CategorySchema(CategoryPatchSchema):
+class CategorySchema(CategoryAddSchema):
     category_id: int
+    
+class CategoryAdminSchema(CategorySchema):
+    is_deleted: bool = Field(description="Indicates if the record is deleted")

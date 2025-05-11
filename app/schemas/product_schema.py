@@ -1,21 +1,25 @@
 from pydantic import Field, BaseModel
 
-from app.schemas import IsDeletedModel
-
 
 class ProductAddSchema(BaseModel):
     name: str = Field(max_length=255)
-    description: str | None = Field(max_length=2048)
+    description: str | None = Field(max_length=2048, default=None)
     barcode: str = Field(max_length=12)
     category_id: int
-    image_url: str | None = Field(max_length=255)
+    image_url: str | None = Field(max_length=255, default=None)
     
-class ProductSchema(ProductAddSchema, IsDeletedModel):
+class ProductPatchSchema(BaseModel):
+    name: str | None = Field(max_length=255, default=None)
+    description: str | None = Field(max_length=2048, default=None)
+    barcode: str | None = Field(max_length=12, default=None)
+    category_id: int | None = Field(default=None)
+    image_url: str | None = Field(max_length=255, default=None)
+    is_deleted: bool | None = Field(description="Indicates if the record is deleted",
+                                    default=None)
+    
+class ProductSchema(ProductAddSchema):
     product_id: int
     
-class CityProductSchema(ProductSchema):
-    city_id: int
-    country_name: str = Field(max_length=255)
-    city_name: str = Field(max_length=255)
-    price: float = Field(gt=0.0)
-    discount: float = Field(ge=0.0, le=1.0)
+class ProductAdminSchema(ProductSchema):
+    is_deleted: bool = Field(description="Indicates if the record is deleted")
+    

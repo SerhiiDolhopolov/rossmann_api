@@ -1,3 +1,2 @@
-from .is_deleted_model import IsDeletedModel
-from .category_schema import CategorySchema, CategoryAddSchema, CategoryPatchSchema
-from .product_schema import ProductSchema, ProductAddSchema
+from .category_schema import CategorySchema, CategoryAdminSchema, CategoryAddSchema, CategoryPatchSchema
+from .product_schema import ProductSchema, ProductAdminSchema, ProductAddSchema, ProductPatchSchema
