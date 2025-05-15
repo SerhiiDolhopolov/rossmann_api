@@ -1,15 +1,15 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from app.config import OLTP_USER, OLTP_PASSWORD, OLTP_HOST, OLTP_PORT, OLTP_DB
+from app.config import USERS_DB_USER, USERS_DB_PASSWORD, USERS_DB_DB, USERS_DB_HOST, USERS_DB_PORT
 
 
 DATABASE_URL = "postgresql+psycopg2://{username}:{password}@{host}:{port}/{dbname}".format(
-    username=OLTP_USER,
-    password=OLTP_PASSWORD,
-    dbname=OLTP_DB,
-    host=OLTP_HOST,
-    port=OLTP_PORT,
+    username=USERS_DB_USER,
+    password=USERS_DB_PASSWORD,
+    dbname=USERS_DB_DB,
+    host=USERS_DB_HOST,
+    port=USERS_DB_PORT,
 )
 
 engine = create_engine(DATABASE_URL)

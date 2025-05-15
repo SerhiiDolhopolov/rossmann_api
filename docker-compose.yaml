@@ -1,10 +1,24 @@
+networks:
+  rossmann-network:
+    external: true
+
 services:
+  redis:
+    image: redis:latest
+    container_name: redis
+    networks:
+      - rossmann-network
+    ports:
+      - 1500:6379
+
   api:
     container_name: api
+    networks:
+      - rossmann-network
     build:
       context: .
       dockerfile: Dockerfile
     volumes:
       - .:/app
     ports:
-      - 2003:8000
+      - 1300:8000

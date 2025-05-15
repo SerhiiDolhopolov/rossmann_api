@@ -22,4 +22,3 @@ class ProductSchema(ProductAddSchema):
     
 class ProductAdminSchema(ProductSchema):
     is_deleted: bool = Field(description="Indicates if the record is deleted")
-    
