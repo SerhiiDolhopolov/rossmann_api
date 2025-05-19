@@ -1,5 +1,8 @@
+from datetime import datetime, timezone
+
 from fastapi import APIRouter, Depends, HTTPException, Query
 from rossmann_oltp_models import Product, Category
+from rossmann_oltp_models.config import DATE_TIME_FORMAT
 
 from app.oltp_db import get_db
 from app.schemas import ProductSchema, ProductAdminSchema, ProductAddSchema, ProductUpdateSchema, ProductPatchSchema
@@ -75,8 +78,8 @@ async def update_product_method(product_id: int, product, db):
             raise HTTPException(status_code=404, detail="Category not found")
 
     for key, value in product.model_dump(exclude_unset=True).items():
+        print(f'Updating {key} to {value}')
         setattr(existing_product, key, value)
-
     db.commit()
     db.refresh(existing_product)
     return existing_product

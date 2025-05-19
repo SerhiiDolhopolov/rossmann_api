@@ -1,5 +1,8 @@
+from datetime import datetime, timezone
+
 from fastapi import APIRouter, Depends, HTTPException, Query
-from rossmann_oltp_models import City, Product, CityProduct, Category
+from rossmann_oltp_models import City, Product, CityProduct
+from rossmann_oltp_models.config import DATE_TIME_FORMAT
 
 from app.oltp_db import get_db
 from app.schemas import ProductSchema, ProductAdminSchema
@@ -188,7 +191,7 @@ async def update_product_in_city_method(city_id: int,
     
     for key, value in city_product.model_dump(exclude_unset=True).items():
         setattr(existing_city_product, key, value)
-    
+        
     db.commit()
     db.refresh(existing_city_product)
     
