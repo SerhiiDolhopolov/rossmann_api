@@ -8,6 +8,12 @@ class ProductAddSchema(BaseModel):
     category_id: int
     image_url: str | None = Field(max_length=255, default=None)
     
+class ProductUpdateSchema(ProductAddSchema):
+    is_deleted: bool = Field(description="Indicates if the record is deleted")
+    
+    class Config:
+        extra = "forbid"
+    
 class ProductPatchSchema(BaseModel):
     name: str | None = Field(max_length=255, default=None)
     description: str | None = Field(max_length=2048, default=None)
@@ -16,6 +22,9 @@ class ProductPatchSchema(BaseModel):
     image_url: str | None = Field(max_length=255, default=None)
     is_deleted: bool | None = Field(description="Indicates if the record is deleted",
                                     default=None)
+    
+    class Config:
+        extra = "forbid"
     
 class ProductSchema(ProductAddSchema):
     product_id: int

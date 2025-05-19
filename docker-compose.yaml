@@ -11,6 +11,14 @@ services:
     ports:
       - 1500:6379
 
+  redisinsight:
+    image: redis/redisinsight:latest
+    container_name: redisinsight
+    networks:
+      - rossmann-network
+    ports:
+      - 1501:5540
+
   api:
     container_name: api
     networks:

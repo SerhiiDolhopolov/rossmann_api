@@ -5,7 +5,9 @@ from app.redis import get_redis
 from app.config import TAG_ADMIN
 
 
-router_admin = APIRouter(prefix='/users_count', tags=[TAG_ADMIN, 'admin:users count 👥'])
+TAG_ADMIN_USERS_COUNT = 'admin:users count 👥'
+
+router_admin = APIRouter(prefix='/users_count', tags=[TAG_ADMIN, TAG_ADMIN_USERS_COUNT])
 IP_COUNT_KEY = 'ip_count'
 EMAIL_COUNT_KEY = 'email_count'
 

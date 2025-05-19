@@ -1,23 +1,37 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from rossmann_oltp_models import Category
 
 from app.oltp_db import get_db
-from app.schemas import CategorySchema, CategoryAdminSchema, CategoryAddSchema, CategoryPatchSchema
+from app.schemas import CategorySchema, CategoryAdminSchema, CategoryAddSchema, CategoryUpdateSchema, CategoryPatchSchema
 from app.kafka.producer import upsert_category_to_local_db
 from app.config import TAG_ADMIN
 
 
-router = APIRouter(prefix="/categories", tags=['categories 📂'])
-router_admin = APIRouter(prefix="/categories", tags=[TAG_ADMIN, 'admin:categories 📂'])
+TAG_CATEGORIES = 'categories 📂'
+TAG_ADMIN_CATEGORIES = 'admin:categories 📂'
+
+router = APIRouter(prefix="/categories", tags=[TAG_CATEGORIES])
+router_admin = APIRouter(prefix="/categories", tags=[TAG_ADMIN, TAG_ADMIN_CATEGORIES])
 
 
-@router.get('', summary='Return categories, which are not deleted.', response_model=list[CategorySchema])
-async def get_categories(db=Depends(get_db)):
-    return db.query(Category).filter(Category.is_deleted == False).all()
+@router.get('/', summary='Return categories, which are not deleted.', response_model=list[CategorySchema])
+async def get_categories(skip: int = Query(0, ge=0),
+                         limit: int = Query(100, gt=0, le=100),
+                         db=Depends(get_db)):
+    return db.query(Category) \
+             .filter(Category.is_deleted == False) \
+             .offset(skip) \
+             .limit(limit) \
+             .all()
 
 @router_admin.get('/all', summary='Return all categories, include deleted.', response_model=list[CategoryAdminSchema])
-async def get_all_categories(db=Depends(get_db)):
-    return db.query(Category).all()
+async def get_all_categories(skip: int = Query(0, ge=0),
+                             limit: int = Query(100, gt=0, le=100),
+                             db=Depends(get_db)):
+    return db.query(Category) \
+             .offset(skip) \
+             .limit(limit) \
+             .all()
 
 @router.get('/{category_id:int}', response_model=CategoryAdminSchema)
 async def get_category(category_id: int, db=Depends(get_db)):
@@ -28,7 +42,7 @@ async def get_category(category_id: int, db=Depends(get_db)):
         raise HTTPException(status_code=404, detail="Category not found")
     return category
 
-@router_admin.post('/add', response_model=CategoryAdminSchema)
+@router_admin.post('/', response_model=CategoryAdminSchema)
 async def add_category(category: CategoryAddSchema, db=Depends(get_db)):
     new_category = Category(**category.model_dump())
     db.add(new_category)
@@ -41,8 +55,15 @@ async def add_category(category: CategoryAddSchema, db=Depends(get_db)):
                                       is_deleted=new_category.is_deleted)
     return new_category
 
-@router_admin.patch('/update/{category_id:int}', response_model=CategoryAdminSchema)
-async def update_category(category_id: int, category: CategoryPatchSchema, db=Depends(get_db)):
+@router_admin.put('/{category_id:int}', response_model=CategoryAdminSchema)
+async def replace_category(category_id: int, category: CategoryUpdateSchema, db=Depends(get_db)):
+    return await update_category_method(category_id=category_id, category=category, db=db)
+
+@router_admin.patch('/{category_id:int}', response_model=CategoryAdminSchema)
+async def update_category(category_id: int, category: CategoryPatchSchema, db=Depends(get_db)):    
+    return await update_category_method(category_id=category_id, category=category, db=db)
+
+async def update_category_method(category_id: int, category, db):
     existing_category = db.query(Category) \
                           .filter(Category.category_id == category_id) \
                           .first()
