@@ -71,7 +71,7 @@ async def get_products_page_by_city(city_id: int,
                                     db = Depends(get_db),
                                     redis = Depends(get_redis)):
     redis_key = f'city_products:city_{city_id}:page_{page}:p_size_{page_size}'
-    expire_time = 60
+    expire_time = 600
     redis_request = redis.get(redis_key)
     if redis_request:
         redis_json = json.loads(redis_request)
