@@ -19,7 +19,9 @@ async def init_producer():
 async def close_producer():
     await producer.stop()
 
-async def send_with_reconnect(topic, payload, headers, key = None):
+async def send_with_reconnect(topic, payload, headers=None, key = None):
+    if not headers:
+        headers = []
     global producer
     try:
         await producer.send_and_wait(topic, payload, headers=headers, key=key)
@@ -34,9 +36,6 @@ async def upsert_category_to_local_db(category_id: int, name: str, description: 
                                           description=description, 
                                           is_deleted=is_deleted)
     updated_at_utc = datetime.now(timezone.utc)
-    
-    #For monkey patching at local db
-    updated_at_utc = datetime(2025, 8, 5, 8, 0)
     topic = KAFKA_TOPIC_LOCAL_DB_UPSERT_CATEGORY
     payload = category_sync_schema.model_dump_json().encode()
     headers = [
@@ -61,9 +60,6 @@ async def upsert_product_to_local_db(product_id: int,
                                         discount=discount,
                                         is_deleted=is_deleted)
     updated_at_utc = datetime.now(timezone.utc)
-    
-    #For monkey patching at local db
-    updated_at_utc = datetime(2025, 8, 5, 8, 0)
     topic = KAFKA_TOPIC_LOCAL_DB_UPSERT_PRODUCT
     payload = product_sync_schema.model_dump_json().encode()
     headers = [

@@ -12,7 +12,7 @@ DATABASE_URL = "postgresql+psycopg2://{username}:{password}@{host}:{port}/{dbnam
     port=OLTP_PORT,
 )
 
-engine = create_engine(DATABASE_URL, echo=True)
+engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 def get_db():

@@ -1,10 +1,10 @@
-from datetime import datetime, timezone
+import json
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from rossmann_oltp_models import City, Product, CityProduct
-from rossmann_oltp_models.config import DATE_TIME_FORMAT
 
 from app.oltp_db import get_db
+from app.redis import get_redis
 from app.schemas import ProductSchema, ProductAdminSchema
 from app.schemas import CityProductSchema, CityProductAdminSchema, CityProductAddSchema, CityProductUpdateSchema, CityProductPatchSchema
 from app.config import TAG_ADMIN
@@ -44,13 +44,13 @@ async def get_products_by_city(city_id: int,
                                db = Depends(get_db)):
     check_city(city_id, db)
     query = db.query(Product, CityProduct) \
-                 .join(CityProduct, Product.product_id == CityProduct.product_id) \
-                 .filter(CityProduct.city_id == city_id,
-                         Product.is_deleted == False,
-                         CityProduct.is_deleted == False) \
-                 .offset(skip) \
-                 .limit(limit) \
-                 .all()
+              .join(CityProduct, Product.product_id == CityProduct.product_id) \
+              .filter(CityProduct.city_id == city_id,
+                      Product.is_deleted == False,
+                      CityProduct.is_deleted == False) \
+              .offset(skip) \
+              .limit(limit) \
+              .all()
                  
     if not query:
         raise HTTPException(status_code=404, detail="Products not found")
@@ -62,10 +62,38 @@ async def get_products_by_city(city_id: int,
         
     return result
 
+@router.get('/{city_id:int}/menu',
+            summary='Return products, which are not deleted, by city id and page.',
+            response_model=list[CityProductSchema])
+async def get_products_page_by_city(city_id: int,
+                                    page: int = Query(1, ge=1),
+                                    page_size: int = Query(4, ge=1),
+                                    db = Depends(get_db),
+                                    redis = Depends(get_redis)):
+    redis_key = f'city_products:city_{city_id}:page_{page}:p_size_{page_size}'
+    expire_time = 60
+    redis_request = redis.get(redis_key)
+    if redis_request:
+        redis_json = json.loads(redis_request)
+        if redis_json:
+            print('From Redis')
+            redis.expire(redis_key, expire_time)
+            return redis_json
+    
+    products = await get_products_by_city(city_id=city_id,
+                                          skip=(page - 1) * page_size,
+                                          limit=page_size,
+                                          db=db)
+    products_data = [product.model_dump() for product in products]
+    redis.set(redis_key, json.dumps(products_data), ex=expire_time)
+    print('From DB')
+    return products
+    
+
 @router_admin.get('/all/{city_id:int}', 
                   summary='Return all products, include deleted, by city id.', 
                   response_model=list[CityProductAdminSchema])
-async def get_all_products_by_city(city_id: int, 
+async def get_all_products_by_city(city_id, 
                                    skip: int = Query(0, ge=0),
                                    limit: int = Query(100, gt=0, le=100),
                                    db = Depends(get_db)):
