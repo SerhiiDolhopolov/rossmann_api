@@ -1,12 +1,10 @@
-from datetime import datetime, timezone
-
 from fastapi import APIRouter, Depends, HTTPException, Query
 from rossmann_oltp_models import Product, Category
-from rossmann_oltp_models.config import DATE_TIME_FORMAT
 
 from app.oltp_db import get_db
 from app.schemas import ProductSchema, ProductAdminSchema, ProductAddSchema, ProductUpdateSchema, ProductPatchSchema
 from app.config import TAG_ADMIN
+from app.kafka.producer import update_product_desc_to_local_db
 
 
 TAG_PRODUCTS = 'products 📦'
@@ -82,4 +80,11 @@ async def update_product_method(product_id: int, product, db):
         setattr(existing_product, key, value)
     db.commit()
     db.refresh(existing_product)
+    
+    await update_product_desc_to_local_db(product_id=existing_product.product_id,
+                                          name=existing_product.name,
+                                          description=existing_product.description,
+                                          barcode=existing_product.barcode,
+                                          category_id=existing_product.category_id,
+                                          is_deleted=existing_product.is_deleted)
     return existing_product
