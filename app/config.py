@@ -29,3 +29,5 @@ S3_PUBLIC_URL = os.getenv("S3_PUBLIC_URL")
 REDIS_HOST = os.getenv("REDIS_HOST")
 REDIS_PORT = os.getenv("REDIS_PORT")
 REDIS_DB = os.getenv("REDIS_DB")
+
+ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS").split(",")

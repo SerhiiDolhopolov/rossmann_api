@@ -1,8 +1,9 @@
 import uvicorn
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
-from app.config import TAG_ADMIN
+from app.config import TAG_ADMIN, ALLOWED_ORIGINS
 from app.api.categories import TAG_CATEGORIES, TAG_ADMIN_CATEGORIES
 from app.api.categories import router as categories_router
 from app.api.categories import router_admin as categories_router_admin
@@ -41,6 +42,16 @@ async def lifespan(app: FastAPI):
     await close_producer()
     
 app = FastAPI(lifespan=lifespan, openapi_tags=openapi_tags)
+
+origins = ALLOWED_ORIGINS
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(categories_router)
 app.include_router(products_router)
