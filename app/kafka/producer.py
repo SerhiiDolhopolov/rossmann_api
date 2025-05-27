@@ -89,14 +89,11 @@ async def upsert_category_to_local_db(
         name=name,
         description=description,
         is_deleted=is_deleted,
-        last_updated_utc=updated_at_utc,
+        updated_at_utc=updated_at_utc,
     )
     topic = KAFKA_TOPIC_LOCAL_DB_UPSERT_CATEGORY
     payload = category_sync_schema.model_dump_json().encode()
-    headers = [
-        ("updated_at_utc", updated_at_utc.isoformat().encode()),
-    ]
-    producer = await send_with_reconnect(producer, topic, payload, headers=headers)
+    producer = await send_with_reconnect(producer, topic, payload)
     return producer
 
 
@@ -111,6 +108,7 @@ async def upsert_product_to_local_db(
     discount: float,
     is_deleted: bool,
 ) -> AIOKafkaProducer:
+    updated_at_utc = datetime.now(timezone.utc)
     product_sync_schema = ProductSchema(
         product_id=product_id,
         name=name,
@@ -120,14 +118,11 @@ async def upsert_product_to_local_db(
         price=price,
         discount=discount,
         is_deleted=is_deleted,
+        updated_at_utc=updated_at_utc,
     )
-    updated_at_utc = datetime.now(timezone.utc)
     topic = KAFKA_TOPIC_LOCAL_DB_UPSERT_PRODUCT
     payload = product_sync_schema.model_dump_json().encode()
-    headers = [
-        ("updated_at_utc", updated_at_utc.isoformat().encode()),
-    ]
-    producer = await send_with_reconnect(producer, topic, payload, headers=headers)
+    producer = await send_with_reconnect(producer, topic, payload)
     return producer
 
 
@@ -140,6 +135,7 @@ async def update_product_desc_to_local_db(
     category_id: int,
     is_deleted: bool,
 ) -> AIOKafkaProducer:
+    updated_at_utc = datetime.now(timezone.utc)
     product_desc_sync_schema = ProductDescSchema(
         product_id=product_id,
         name=name,
@@ -147,12 +143,9 @@ async def update_product_desc_to_local_db(
         barcode=barcode,
         category_id=category_id,
         is_deleted=is_deleted,
+        updated_at_utc=updated_at_utc,
     )
-    updated_at_utc = datetime.now(timezone.utc)
     topic = KAFKA_TOPIC_LOCAL_DB_UPDATE_PRODUCT_DESC
     payload = product_desc_sync_schema.model_dump_json().encode()
-    headers = [
-        ("updated_at_utc", updated_at_utc.isoformat().encode()),
-    ]
-    producer = await send_with_reconnect(producer, topic, payload, headers=headers)
+    producer = await send_with_reconnect(producer, topic, payload)
     return producer
