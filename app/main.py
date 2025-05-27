@@ -17,30 +17,28 @@ from app.api.users_count import TAG_ADMIN_USERS_COUNT
 from app.api.users_count import router_admin as users_count_router
 from app.api.users import TAG_USERS
 from app.api.users import router as users_router
-
-from app.kafka.producer import init_producer, close_producer 
-
+from app.kafka.producer import init_producer, close_producer
 
 openapi_tags = [
-    {"name": TAG_CATEGORIES },
-    {"name": TAG_PRODUCTS },
-    {"name": TAG_CITY_PRODUCTS },
-    {"name": TAG_USERS },
-    {"name": TAG_ADMIN },
-    {"name": TAG_ADMIN_CATEGORIES },
-    {"name": TAG_ADMIN_PRODUCTS },
+    {"name": TAG_CATEGORIES},
+    {"name": TAG_PRODUCTS},
+    {"name": TAG_CITY_PRODUCTS},
+    {"name": TAG_USERS},
+    {"name": TAG_ADMIN},
+    {"name": TAG_ADMIN_CATEGORIES},
+    {"name": TAG_ADMIN_PRODUCTS},
     {"name": TAG_ADMIN_CITY_PRODUCTS},
-    {"name": TAG_ADMIN_USERS_COUNT },
-    
+    {"name": TAG_ADMIN_USERS_COUNT},
 ]
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    await init_producer()
+    app.state.kafka_producer = await init_producer()
     yield
-    await close_producer()
-    
+    await close_producer(app.state.kafka_producer)
+
+
 app = FastAPI(lifespan=lifespan, openapi_tags=openapi_tags)
 
 origins = ALLOWED_ORIGINS

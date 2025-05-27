@@ -1,10 +1,10 @@
 from dotenv import load_dotenv
 import os
 
-
 load_dotenv()
+
 DATE_TIME_FORMAT = os.getenv("DATE_TIME_FORMAT", "%Y-%m-%d %H:%M:%S")
-TAG_ADMIN = 'admin 🦸‍♂️'
+TAG_ADMIN = "admin 🦸‍♂️"
 
 OLTP_USER = os.getenv("OLTP_USER")
 OLTP_PASSWORD = os.getenv("OLTP_PASSWORD")
