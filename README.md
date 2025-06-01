@@ -7,8 +7,8 @@
 [![sqlalchemy](https://img.shields.io/badge/sqlalchemy-2.0.41-d6123c?color=white&labelColor=d6123c&logo=sqlalchemy&logoColor=white)](https://www.sqlalchemy.org/)
 [![fastapi](https://img.shields.io/badge/fastapi-0.115.12-d6123c?color=white&labelColor=d6123c&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 [![aiokafka](https://img.shields.io/badge/aiokafka-0.12.0-d6123c?color=white&labelColor=d6123c&logo=apachekafka&logoColor=white)](https://aiokafka.readthedocs.io/)
-[![rossmann-oltp](https://img.shields.io/badge/rossmann--oltp-d6123c?color=white&labelColor=d6123c)](https://github.com/your-org/rossmann-oltp)
-[![rossmann-users-db](https://img.shields.io/badge/rossmann--users--db-d6123c?color=white&labelColor=d6123c)](https://github.com/your-org/rossmann-users-db)
+[![rossmann-oltp](https://img.shields.io/badge/rossmann--oltp-d6123c?color=white&labelColor=d6123c)](https://github.com/SerhiiDolhopolov/rossmann_oltp)
+[![rossmann-users-db](https://img.shields.io/badge/rossmann--users--db-d6123c?color=white&labelColor=d6123c)](https://github.com/SerhiiDolhopolov/rossmann_users_db)
 
 <!-- omit in toc -->
 ## Services
@@ -39,7 +39,7 @@ Also this section contains a link to website with frontend.
 **This Docker section includes:**
   - **Redis**
     - Connection URL for Redis insight
-      - [redis://default@redis:6379](redis://default@redis:6379)
+      - [`redis://default@redis:6379`](redis://default@redis:6379)
   - **Redis insight** to view Redis databases. 
     - 🌐 Web interface: 
       - [localhost:1501](http://localhost:1501)
