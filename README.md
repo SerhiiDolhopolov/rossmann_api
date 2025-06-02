@@ -32,18 +32,18 @@
 🔵 [**<- Previous part with Users DB.**](https://github.com/SerhiiDolhopolov/rossmann_users_db)
 
 ## Project workflow
-This section contains an API to work with General OLTP DB and Users DB and Redis for cache and working with approximate users count.
+This section contains an API to work with General OLTP DB and Users DB and [Redis](https://redis.io/) for cache and working with approximate users count.
 Also this section contains a link to website with frontend.
 
 ## Docker Containers
 **This Docker section includes:**
-  - **Redis**
+  - **[Redis](https://redis.io/)**
     - Connection URL for Redis insight
       - [`redis://default@redis:6379`](redis://default@redis:6379)
-  - **Redis insight** to view Redis databases. 
+  - **[Redis insight](https://redis.io/insight/)** to view Redis databases. 
     - 🌐 Web interface: 
       - [localhost:1501](http://localhost:1501)
-  - **API**
+  - **[API](https://fastapi.tiangolo.com/)**
     - 🌐 Web interface:
       - [localhost:1300](http://localhost:1300)
   - **Website** [(Created by ellie25v)](https://github.com/ellie25v/rossmann-web)
@@ -61,7 +61,7 @@ See more details about the website [here](https://github.com/ellie25v/rossmann-w
 
 ## Getting Started
 **To start:**
-1. Complete all steps in the [first part](https://github.com/SerhiiDolhopolov/rossmann_services).
+1. Complete all steps in the [main part](https://github.com/SerhiiDolhopolov/rossmann_services).
 2. Run the services:
 ```bash
 docker compose up --build
